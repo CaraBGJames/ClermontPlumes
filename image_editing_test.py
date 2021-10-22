@@ -41,10 +41,14 @@ def remove_back(image, back, value = 10):
     removed[(back > image) | (removed < value)] = 0
     return removed
 
-def find_top(image, thresh = 400):
+def find_top(image, thresh = 70):
     """Find the top of the plume image"""
     binary = image > thresh
-    top = np.where(sum(binary) > 0)[0][0]
+    total = binary.sum()
+    if total < 100:
+        top = 0
+    else:
+        top = np.where(sum(binary) > 0)[0][0]
     return top
   
 # %% Testing image 
@@ -95,4 +99,17 @@ print(t1-t0)
 
 np.save('2021-10-21_exp1',img_array)
     
+# %% Load the image array
 
+img_array = np.load('2021-10-21_exp1.npy')
+
+# %% Finding the plume height
+
+height_arr = []
+for n in range(img_array.shape[2]):
+    h = find_top(img_array[:,:,n])
+    height_arr.append(h)
+
+# %% Make video
+
+img_array_8 = np.uint8(img_array/255)
