@@ -18,7 +18,7 @@ def show_im(image, cmap_type = 'viridis', title=''):
     im = rotate(image,-90, resize = True)
     plt.imshow(im, cmap = cmap_type)
     plt.title(title)
-    plt.axis('off')
+    #plt.axis('off')
     plt.show()
     
 def hist_im(image, nbins = 256):
@@ -113,3 +113,7 @@ for n in range(img_array.shape[2]):
 # %% Make video
 
 img_array_8 = np.uint8(img_array/255)
+
+# %% Integrate the calibration
+
+cal = plt.imread("Experiments/2021-10-21/cal1/cal1000001.tif")
