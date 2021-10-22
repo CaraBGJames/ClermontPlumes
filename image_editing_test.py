@@ -9,6 +9,9 @@ import matplotlib.pyplot as plt
 from skimage.transform import rotate
 from skimage.exposure import equalize_adapthist
 import glob
+import numpy as np
+import time
+
 
 def show_im(image, cmap_type = 'viridis', title=''):
     """shows image as plot"""
@@ -44,12 +47,10 @@ def find_top(image, thresh = 400):
     top = np.where(sum(binary) > 0)[0][0]
     return top
   
-    
-
 # %% Testing image 
 
-im = plt.imread("2021-10-15/exp1/exp1001000.tif")
-back = plt.imread("2021-10-15/background1/background1000010.tif")
+im = plt.imread("Experiments/2021-10-15/exp1/exp1001000.tif")
+back = plt.imread("Experiments/2021-10-15/background1/background1000010.tif")
 print('in data type:',im.dtype)
 
 test = remove_back(im,back)
@@ -58,18 +59,40 @@ test2 = equalize_adapthist(test)
 show_im(test, 'Greys_r')
 show_im(test2, 'Greys_r')
 
-# %% Finding height variation
+#%% Get average background to remove
 
-img_array = []
-for filename in glob.glob('C:/New folder/Images/*.jpg'):
-how    img = cv2.imread(filename)
-    height, width, layers = img.shape
-    size = (width,height)
-    img_array.append(img)
- 
- 
-out = cv2.VideoWriter('project.avi',cv2.VideoWriter_fourcc(*'DIVX'), 15, size)
- 
-for i in range(len(img_array)):
-    out.write(img_array[i])
-out.release()
+back_files = glob.glob('Experiments/2021-10-21/back1/*.tif')
+file1 = plt.imread(back_files[0])
+height, width = file1.shape
+back_array = np.zeros((height, width, len(back_files)), dtype = 'uint16')
+count = 0
+for file in back_files:
+    back = plt.imread(file)
+    back_array[:, :, count] = back
+    count += 1
+
+back_av = np.uint16(np.mean(back_array, axis = 2))
+# %% Saving all the images into an array
+t0 = time.time()
+
+filenames = glob.glob('Experiments/2021-10-21/exp1/*.tif')
+file1 = plt.imread(filenames[0])
+height, width = file1.shape
+img_array = np.zeros((height, width, len(filenames)), dtype = 'uint16')
+count = 0
+for file in filenames:
+    img = plt.imread(file)
+    img_noback = remove_back(img, back_av)
+    img_array[:, :, count] = img_noback
+    count += 1
+    if count%100 == 0:
+        print(count)
+
+t1 = time.time()
+print(t1-t0)
+
+# %% Save the image array
+
+np.save('2021-10-21_exp1',img_array)
+    
+
