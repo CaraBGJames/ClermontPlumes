@@ -10,8 +10,10 @@ from skimage.transform import rotate
 import numpy as np
 import copy
 from scipy.signal import lfilter
+from skimage.filters import threshold_yen
+from skimage.exposure import equalize_adapthist
 
-def show_im(image, cmap_type = 'viridis', title=''):
+def show_im(image, cmap_type = 'Greys_r', title=''):
     """shows image as plot"""
     im = rotate(image,-90, resize = True)
     plt.imshow(im, cmap = cmap_type)
@@ -35,35 +37,36 @@ def to_8bit(image):
     else:
         print('Image must be in uint16 format')
         
-def remove_back(image, back, value = 10):
+def remove_back(image, back):
     """Remove the background image of plume"""
     removed = image - back
     #make sure it doesn't loop around and get rid of low variation
-    removed[(back > image) | (removed < value)] = 0
+    removed[(back > image)] = 0
     return removed
 
-def find_top(image, thresh = 70):
+def find_top(image):
     """Find the top of the plume image"""
+    thresh = threshold_yen(image)
     binary = image > thresh
-    total = binary.sum()
-    if total < 100:
+    tot = np.sum(binary)
+    if tot < 10:
         top = 0
     else:
-        top = np.where(sum(binary) > 0)[0][0]
+        top = np.where(np.sum(binary,0) > 4)[0][0]
     return top
   
-def show_frame_top(array, frame_num, val = 100):
+def show_frame_top(array, frame_num):
     """returns image of one frame in an array where frames are 3rd dimension
     and also puts a line at where the top is calulated"""
     frame = copy.deepcopy(array[:, :, frame_num])
-    top = find_top(frame, val)   
+    top = find_top(frame)   
     im = rotate(frame,-90, resize = True)
     plt.imshow(im, cmap = 'Greys_r')
     plt.axhline(top, color = 'w', linewidth = 1)
     plt.axis('off')
     plt.show()
     
-def plume_height(array, val = 150):
+def plume_height(array, val = 200):
     """returns a graph of how the height of the plume images vary with time"""
     #finding height in pix
     height_arr = []
@@ -76,7 +79,7 @@ def plume_height(array, val = 150):
         count+=1
     return height_arr
 
-def plot_height(height_vals, smooth = True, smooth_val = 150):
+def plot_height(height_vals, smooth = True, smooth_val = 150, show = True):
     #plotting
     plt.plot(height_vals, linewidth = 1, c = 'k')
     if smooth == True:
@@ -103,5 +106,7 @@ def plot_height(height_vals, smooth = True, smooth_val = 150):
     plt.xlabel('time, s')
     plt.yticks(yticks,ytick_val)
     plt.xticks(xtick_loc,xtick_val)
-    plt.show()
+    
+    if show == True:
+        plt.show()
     
