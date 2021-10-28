@@ -16,7 +16,7 @@ from skimage.exposure import equalize_adapthist
 def show_im(image, cmap_type = 'Greys_r', title=''):
     """shows image as plot"""
     im = rotate(image,-90, resize = True)
-    plt.imshow(im, cmap = cmap_type)
+    plt.imshow(im, cmap = cmap_type, vmin=0, vmax=1)
     plt.title(title)
     plt.axis('off')
     plt.show()
@@ -58,7 +58,7 @@ def find_top(image):
 def show_frame_top(array, frame_num):
     """returns image of one frame in an array where frames are 3rd dimension
     and also puts a line at where the top is calulated"""
-    frame = copy.deepcopy(array[:, :, frame_num])
+    frame = array[:, :, frame_num]
     top = find_top(frame)   
     im = rotate(frame,-90, resize = True)
     plt.imshow(im, cmap = 'Greys_r')
