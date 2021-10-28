@@ -14,12 +14,12 @@ import time
 import myfunctions as mf
 import cv2
 
-directory = 'Experiments/2021-10-21/'
-exp_n = '3'
+directory = 'Experiments/2021-10-15/'
+exp_n = '1'
 
 # %% Background average
 
-back_files = glob.glob(directory+'/back'+exp_n+'/back'+exp_n+'*.tif')
+back_files = glob.glob(directory+'/background'+exp_n+'/background'+exp_n+'*.tif')
 file1 = plt.imread(back_files[0])
 height, width = file1.shape
 back_array = np.zeros((height, width, len(back_files)), dtype = 'uint16')
@@ -44,8 +44,8 @@ for file in filenames:
     img = plt.imread(file)
     
     #comment out _noback if needed
-    #img_noback = mf.remove_back(img, back_av)
-    img_array[:, :, count] = img#_noback
+    img_noback = mf.remove_back(img, back_av)
+    img_array[:, :, count] = img_noback
     
     count += 1
     if count%100 == 0:
@@ -54,7 +54,7 @@ for file in filenames:
 t1 = time.time()
 print(t1-t0)
 
-name = '2021-10-21_exp3_16bit'
+name = '2021-10-15_exp1_16bit_noback'
 np.save(directory+name,img_array)
 # %% change to 8bit and save
 img_array_8 = np.zeros((512,1024,4366), dtype = 'uint8')

@@ -9,20 +9,18 @@ import matplotlib.pyplot as plt
 import numpy as np
 import myfunctions as mf
 
+# %% Read in data
+#img_array_1 = np.load('Experiments/2021-10-21/2021-10-21_exp1_16bit.npy')
+#img_array_2 = np.load('Experiments/2021-10-21/2021-10-21_exp2_16bit_noback.npy')
+#img_array_3 = np.load('Experiments/2021-10-21/2021-10-21_exp3_16bit.npy')
+img_array_4 = np.load('Experiments/2021-10-15/2021-10-15_exp1_16bit_noback.npy')
 
-img_array_2 = np.load('Experiments/2021-10-21/2021-10-21_exp2_16bit_noback.npy')
-# %% Finding the plume height
-#h_exp1 = mf.plume_height(img_array)
-#h_exp2 = mf.plume_height(img_array_2)
-
-mf.plot_height(h_exp1, show = False, col = 'r')
-mf.plot_height(h_exp2, show = True, col = 'b')
+#h_exp1 = np.load('Experiments/Heights/2021-10-21_exp1.npy')
+#h_exp2 = np.load('Experiments/Heights/2021-10-21_exp2.npy')
+#h_exp3 = np.load('Experiments/Heights/2021-10-21_exp3.npy')
 
 # %% Plotting
-
-for f in range(400,500):
-    show_frame_top(img_array, f)
-
+h_exp4 = mf.plume_height(img_array_4)
 
 # %% 
 
