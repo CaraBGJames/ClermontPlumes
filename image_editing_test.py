@@ -20,7 +20,8 @@ h_exp1 = mf.plume_height(img_array)
 
 # %% Plotting
 
-mf.plot_height(h_exp1, smooth = False)
+for f in range(400,550):
+    show_frame_top(img_array, f)
 
 
 # %% 

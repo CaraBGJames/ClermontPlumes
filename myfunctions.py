@@ -12,44 +12,28 @@ import copy
 from scipy.signal import lfilter
 from skimage.filters import threshold_yen
 from skimage.exposure import equalize_adapthist
+import matplotlib.colors as colors
+from skimage.morphology import binary_erosion as b_e
+from skimage.morphology import diamond
+
 
 def show_im(image, cmap_type = 'Greys_r', title=''):
     """shows image as plot"""
     im = rotate(image,-90, resize = True)
-    plt.imshow(im, cmap = cmap_type, vmin=0, vmax=1)
+    im_sum = np.sum(im)
+    plt.imshow(im, cmap = cmap_type, vmin = 0, vmax = 0.0001)
     plt.title(title)
     plt.axis('off')
+    plt.colorbar()
     plt.show()
-    
-def hist(image, nbins = 256):
-    """Plot a histogram of the pixel variation in image"""
-    hist, bin_edges = np.histogram(image, bins = nbins)
-    plt.bar(bin_edges[:-1], hist, width = 1)
-    plt.xlim(min(bin_edges), max(bin_edges))
-    plt.show()
-    
-def to_8bit(image):
-    """converts a 16bit to 8bit image"""
-    if image.dtype == 'uint16':
-        import cv2
-        im_8 = cv2.convertScaleAbs(image, alpha=255/image.max())
-        return im_8
-    else:
-        print('Image must be in uint16 format')
-        
-def remove_back(image, back):
-    """Remove the background image of plume"""
-    removed = image - back
-    #make sure it doesn't loop around and get rid of low variation
-    removed[(back > image)] = 0
-    return removed
 
 def find_top(image):
     """Find the top of the plume image"""
-    thresh = threshold_yen(image)
+    thresh = np.sum(image)**(1/3.5)
     binary = image > thresh
+    binary2 = b_e(binary, diamond(1))
     tot = np.sum(binary)
-    if tot < 10:
+    if tot < 50:
         top = 0
     else:
         top = np.where(np.sum(binary,0) > 4)[0][0]
@@ -61,7 +45,7 @@ def show_frame_top(array, frame_num):
     frame = array[:, :, frame_num]
     top = find_top(frame)   
     im = rotate(frame,-90, resize = True)
-    plt.imshow(im, cmap = 'Greys_r')
+    plt.imshow(im, cmap = 'Greys_r', vmin=0, vmax=0.01)
     plt.axhline(top, color = 'w', linewidth = 1)
     plt.axis('off')
     plt.show()
@@ -110,3 +94,25 @@ def plot_height(height_vals, smooth = True, smooth_val = 150, show = True):
     if show == True:
         plt.show()
     
+def hist(image, nbins = 256):
+    """Plot a histogram of the pixel variation in image"""
+    hist, bin_edges = np.histogram(image, bins = nbins)
+    plt.bar(bin_edges[:-1], hist, width = 1)
+    plt.xlim(min(bin_edges), max(bin_edges))
+    plt.show()
+    
+def to_8bit(image):
+    """converts a 16bit to 8bit image"""
+    if image.dtype == 'uint16':
+        import cv2
+        im_8 = cv2.convertScaleAbs(image, alpha=255/image.max())
+        return im_8
+    else:
+        print('Image must be in uint16 format')
+        
+def remove_back(image, back):
+    """Remove the background image of plume"""
+    removed = image - back
+    #make sure it doesn't loop around and get rid of low variation
+    removed[(back > image)] = 0
+    return removed
