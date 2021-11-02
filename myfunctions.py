@@ -70,8 +70,8 @@ def plot_height(height_vals, raw = True, raw_col = 'k', smooth = True, smooth_co
         plt.plot(height_vals, linewidth = 1, c = raw_col)
         
     if smooth == True:
-        yhat = savgol_filter(y, 51, 3) # window size 51, polynomial order 3
-    
+        height_smooth = savgol_filter(height_vals, 401, 3) # window size 51, polynomial order 3
+        plt.plot(height_smooth, linewidth = 2, c = smooth_col)
     #sorting out the axis
     xtick_val = np.arange(0,41,5)
     xtick_loc = np.multiply(xtick_val,125)
