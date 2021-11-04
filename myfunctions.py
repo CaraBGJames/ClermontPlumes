@@ -8,33 +8,39 @@ Created on Mon Oct 25 14:24:53 2021
 import matplotlib.pyplot as plt
 from skimage.transform import rotate
 import numpy as np
-import copy
-from scipy.signal import lfilter
-from skimage.filters import threshold_yen
-from skimage.exposure import equalize_adapthist
-import matplotlib.colors as colors
 from skimage.morphology import binary_erosion as b_e
 from skimage.morphology import diamond
 from scipy.signal import savgol_filter
 
 def show_im(image, cmap_type = 'Greys_r', title=''):
-    """shows image as plot"""
+    """Rotate and show an image array as plot.
+    
+    Keyword arguments:
+    image: the 2D image array
+    cmap_type: colormap (default = Greys_r)
+    title: plot title (default = none)
+    """
     im = rotate(image,-90, resize = True)
-    im_sum = np.sum(im)
-    plt.imshow(im, cmap = cmap_type, vmin = 0, vmax = 0.001)
+    plt.imshow(im, cmap = cmap_type)
     plt.title(title)
     plt.axis('off')
     plt.colorbar()
     plt.show()
 
 def find_top(image):
-    """Find the top of the plume image"""
-    thresh = np.sum(image)**(1/3.5)
+    """Find the height in pixels of the plume from an image.
+    
+    Use an arbitrary threshold relating to the total image brightness
+    to form a binary image. Remove noise using erosion. If total brightness
+    very low, count as having no plume. Sum along the columns and find the 
+    first non-zero value.
+    """
+    thresh = np.sum(image)**(1/3.8)
     binary = image > thresh
     binary2 = b_e(binary, diamond(1))
     tot = np.sum(binary2)
     if tot < 20:
-        top = 0
+        top = 1023
     else:
         top = np.where(np.sum(binary2,0) !=0)[0][0]
     return (1023 - top)
@@ -49,9 +55,12 @@ def show_frame_top(array, frame_num):
     plt.axhline((1023-top), color = 'w', linewidth = 1)
     plt.axis('off')
     plt.show()
-    
+
 def plume_height(array):
-    """returns a graph of how the height of the plume images vary with time"""
+    """Return 1D array of height of plume in pixels with time.
+    
+    Uses predefined find_top function on all image arrays in a 3D array.
+    """
     #finding height in pix
     height_arr = []
     count = 0
@@ -64,8 +73,20 @@ def plume_height(array):
         
     return np.array(height_arr)
 
+
 def plot_height(height_vals, raw = True, raw_col = 'k', smooth = True, smooth_col = 'r'):
-    """plots the height with revised axis and smoothed"""
+    """Plot the height with revised axis and option to plot smoothed.
+    
+    Uses calibration image and frame rate to redefine the plot axis
+    in terms of cm and seconds.
+    
+    Keyword arguments:
+    height_vals: height of the plume in pixels with time
+    raw: plots raw data (default = True)
+    raw_col: color of raw data (default = black)
+    smooth: plots data smoothed with savgol filter (default = True)
+    smooth_col: color of smoothed data (default = red)   
+    """
     if raw == True: 
         plt.plot(height_vals, linewidth = 1, c = raw_col)
         
@@ -98,16 +119,24 @@ def hist(image, nbins = 256):
     plt.show()
     
 def to_8bit(image):
-    """converts a 16bit to 8bit image"""
+    """Convert a 16bit to 8bit image without changing relative brightness
+    
+    If original image not uint16, print error message.
+    """
     if image.dtype == 'uint16':
         import cv2
         im_8 = cv2.convertScaleAbs(image, alpha=255/image.max())
         return im_8
     else:
         print('Image must be in uint16 format')
-        
+
 def remove_back(image, back):
-    """Remove the background image of plume"""
+    """Remove the background image of plume.
+    
+    Keyword arguments:
+    image: 1D array containing the image with data
+    back: 1D array containing the background of the image.
+    """
     removed = image - back
     #make sure it doesn't loop around and get rid of low variation
     removed[(back > image)] = 0

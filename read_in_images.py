@@ -14,12 +14,12 @@ import time
 import myfunctions as mf
 import cv2
 
-directory = 'Experiments/2021-10-15/'
+directory = 'Experiments/2021-11-03'
 exp_n = '1'
 
 # %% Background average
 
-back_files = glob.glob(directory+'/background'+exp_n+'/background'+exp_n+'*.tif')
+back_files = glob.glob(directory+'/back'+exp_n+'/back'+exp_n+'*.tif')
 file1 = plt.imread(back_files[0])
 height, width = file1.shape
 back_array = np.zeros((height, width, len(back_files)), dtype = 'uint16')
@@ -34,7 +34,7 @@ back_av = np.uint16(np.mean(back_array, axis = 2))
 # %% Saving all the images into an array
 t0 = time.time()
 
-filenames = glob.glob(directory+'exp'+exp_n+'/exp'+exp_n+'*.tif')
+filenames = glob.glob(directory+'/exp'+exp_n+'/exp'+exp_n+'*.tif')
 file1 = plt.imread(filenames[0])
 height, width = file1.shape
 img_array = np.zeros((height, width, len(filenames)), dtype = 'uint16')
@@ -54,7 +54,7 @@ for file in filenames:
 t1 = time.time()
 print(t1-t0)
 
-name = '2021-10-15_exp1_16bit_noback'
+name = '/2021-11-03_exp1_noback'
 np.save(directory+name,img_array)
 # %% change to 8bit and save
 img_array_8 = np.zeros((512,1024,4366), dtype = 'uint8')
@@ -67,5 +67,13 @@ for f in range(img_array.shape[2]):
         print(count)
     count+=1
 
-name = '2021-10-21_exp2_8bit_noback'
+name = '2021-10-21_exp3_8bit_noback'
 np.save(directory+name,img_array_8)
+
+#%% Load info from excel
+
+import pandas as pd
+
+xls = pd.ExcelFile('Plume_roundnozzle.xlsx')
+df2 = pd.read_excel(xls, 'Sheet3')
+B = df2['B m4/s3'].to_numpy()
