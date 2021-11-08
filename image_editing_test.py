@@ -10,7 +10,7 @@ import numpy as np
 import myfunctions as mf
 from skimage.transform import rotate
 # %% Read in data
-img_array = np.load('Experiments/2021-11-02/2021-11-02_exp2_16bit_noback.npy')
+img_array = np.load('Experiments/2021-11-03/2021-11-03_exp1_noback.npy')
 #img_array_2 = np.load('Experiments/2021-10-21/2021-10-21_exp2_16bit_noback.npy')
 #img_array_3 = np.load('Experiments/2021-10-21/2021-10-21_exp3_16bit.npy')
 #img_array_4 = np.load('Experiments/2021-10-15/2021-10-15_exp1_16bit_noback.npy')
@@ -34,11 +34,11 @@ n = 2200
 dif = 100
 image = mf.remove_back(img_array[:,:,n],img_array[:,:,n-dif])
 
-for i in range(2000, 5400, 10):
+for i in range(2000, 2400):
     #image = mf.remove_back(img_array[:,:,i],img_array[:,:,i-5])
-    image = img_array[:,:,i]
+    image = img_array[100:,:,i]
     im = rotate(image,-90, resize = True)
-    plt.imshow(im, cmap = 'Greys_r')
+    plt.imshow(im, cmap = 'Greys_r', vmin = 0, vmax = 0.005)
     plt.axis('off')
     #plt.colorbar()
     plt.show()
