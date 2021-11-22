@@ -10,7 +10,7 @@ import numpy as np
 import myfunctions as mf
 from skimage.transform import rotate
 # %% Read in data
-img_array = np.load('Experiments/2021-11-03/2021-11-03_exp1_noback.npy')
+img_array2 = np.load('Experiments/2021-10-21/2021-10-21_exp1_16bit_noback.npy')
 #img_array_2 = np.load('Experiments/2021-10-21/2021-10-21_exp2_16bit_noback.npy')
 #img_array_3 = np.load('Experiments/2021-10-21/2021-10-21_exp3_16bit.npy')
 #img_array_4 = np.load('Experiments/2021-10-15/2021-10-15_exp1_16bit_noback.npy')
@@ -42,3 +42,30 @@ for i in range(2000, 2400):
     plt.axis('off')
     #plt.colorbar()
     plt.show()
+    
+#%% testing new range
+
+b_log = np.log10(brightness2)
+o_max = 8
+o_min = 5.7
+o_range = o_max - o_min
+n_min = 0
+n_max = 350
+n_range = n_max - n_min
+
+thresh_vals = (((b_log - o_min)*n_range)/o_range)+n_min
+
+plt.plot(thresh_vals)
+plt.plot()
+
+#%%
+
+x = np.linspace(1,5000,5000)
+y = np.log(x*10)
+
+plt.plot(x,y+1)
+#%%
+
+for f in range(2000,5000, 10):
+    show_frame_top(img_array, f)
+

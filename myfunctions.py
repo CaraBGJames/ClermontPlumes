@@ -35,7 +35,15 @@ def find_top(image):
     very low, count as having no plume. Sum along the columns and find the 
     first non-zero value.
     """
-    thresh = np.sum(image)**(1/3.8)
+    #first we are going to define function to help decide thresh off brightness
+    brightness = np.log10(np.sum(image)) # in range 5.8-8
+    new_max = 350
+    new_min = 20
+    new_range = new_max - new_min
+    old_max = 8
+    old_min = 5.7
+    old_range = old_max - old_min
+    thresh = (((brightness - old_min)*new_range)/old_range) + new_min
     binary = image > thresh
     binary2 = b_e(binary, diamond(1))
     tot = np.sum(binary2)

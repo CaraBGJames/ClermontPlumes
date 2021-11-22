@@ -14,7 +14,7 @@ import time
 import myfunctions as mf
 import cv2
 
-directory = 'Experiments/2021-11-03'
+directory = 'Experiments/2021-11-17'
 exp_n = '1'
 
 # %% Background average
@@ -54,14 +54,14 @@ for file in filenames:
 t1 = time.time()
 print(t1-t0)
 
-name = '/2021-11-03_exp1_noback'
+name = '/2021-11-17_exp1_noback'
 np.save(directory+name,img_array)
 # %% change to 8bit and save
-img_array_8 = np.zeros((512,1024,4366), dtype = 'uint8')
+img_array_8 = np.zeros((img_array.shape), dtype = 'uint8')
 count = 0
 for f in range(img_array.shape[2]):
     f_16 = img_array[:,:,f]
-    f_8 = cv2.convertScaleAbs(f_16, alpha=255/f_16.max())
+    f_8 = mf.to_8bit(f_16)
     img_array_8[:, :, f] = f_8
     if count % 100 == 0:
         print(count)
