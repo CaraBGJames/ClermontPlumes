@@ -8,24 +8,24 @@ Created on Tue Nov 23 14:57:13 2021
 
 import numpy as np
 cal = np.zeros(1024)
-start_pix = 15
+start_pix = 22
 start_val = 0
 end_pix = 1024
-end_val = 54.7
+end_val = 38.5
 
 cal[start_pix:] = np.linspace(start_val, end_val, (end_pix - start_pix))
 
-#np.save('Experiments/2021-11-15/cal3',cal)
+np.save('Experiments/2021-11-24/cal1',cal)
 
 #%% Check calibration working
 import numpy as np
 import matplotlib.pyplot as plt
 from skimage.transform import rotate
 
-file = plt.imread('Experiments/2021-10-21/cal1/cal1000001.tif')
-cal = np.load('Experiments/2021-10-21/cal1.npy')
+file = plt.imread('Experiments/2021-11-24/cal1/cal1000001.tif')
+cal = np.load('Experiments/2021-11-24/cal1.npy')
 
-r = list(range(5,80,5))
+r = list(range(5,45,5))
 
 h = np.zeros(len(r))
 count = 0
@@ -43,11 +43,12 @@ for n in range(len(h)):
 plt.show()
     
 #%%import height data and translate it
-
+import numpy as np
 import pandas as pd
-df = pd.read_excel('Height_data.xlsx', '1115')
-height_pix = df.iloc[1:,1].dropna().to_numpy().astype(int)
-cal = np.load('Experiments/2021-11-15/cal1.npy')
+import matplotlib.pyplot as plt
+df = pd.read_excel('Height_data.xlsx', '1109', header = 1)
+height_pix = df.iloc[:,6].fillna(0).to_numpy().astype(int)
+cal = np.load('Experiments/2021-11-09/cal3.npy')
 
 height_cm = np.zeros(len(height_pix))
 
@@ -57,5 +58,6 @@ for i in height_pix:
     height_cm[count] = hm
     count += 1
 
+height_cm[height_cm == 0.] = np.NaN
 plt.plot(height_cm)
 

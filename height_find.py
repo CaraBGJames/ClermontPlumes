@@ -19,7 +19,15 @@ def getLargestCC(segmentation):
         largestCC = np.zeros(segmentation.shape)
     return largestCC
 
-def height_find(I_t, I_step, I_ref):
+def plume_find(I_t, I_step, I_ref):
+    """Returns binary image array of the detected plume at frame I_t
+    
+    Keyword arguments:
+    I_t: the 2D image array at time t
+    I_step: the 2D image array at time t + dt
+    I_ref: the background 2D image
+    
+    """
     #differences and get rid of ones with high values
     A = I_t - I_step
     A[I_t < I_step] = 0 
@@ -53,8 +61,6 @@ def height_find(I_t, I_step, I_ref):
     A6 = binary_closing(A5, square(3))
     B6 = binary_closing(B5, square(3))
 
-
-
     #combine the two mask 
     C = A6 + B6
 
@@ -64,6 +70,20 @@ def height_find(I_t, I_step, I_ref):
     #Dilate and fill holes
     E = binary_dilation(D, square(3))
     
+    return E
+  
+def height_find(I_t, I_step, I_ref):
+    """find the height of the plume in pixels from base of image
+    
+    Keyword arguments:
+    I_t: the 2D image array at time t
+    I_step: the 2D image array at time t + dt
+    I_ref: the background 2D image
+    
+    returns the height in pixels from the base
+    """
+    E = plume_find(I_t, I_step, I_ref):
+    
     #and finally find the top height from the base
     if np.sum(E) < 100:
         F = np.NaN
@@ -71,4 +91,3 @@ def height_find(I_t, I_step, I_ref):
         F = 1024 - np.argmax(np.sum(E, axis = 0) != 0)
     
     return F
-  

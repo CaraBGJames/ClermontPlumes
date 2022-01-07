@@ -32,15 +32,15 @@ def getLargestCC(segmentation):
 #%% RunCOde
 t0 = time.time()
 
-directory = 'Experiments/2021-11-17'
-exp_n = '1'
+directory = 'Experiments/2021-11-29'
+exp_n = '2'
 I_ref = plt.imread(directory+'/back'+exp_n+'/back'+exp_n+'000001.tif')
 
 filenames = glob.glob(directory+'/exp'+exp_n+'/exp'+exp_n+'*.tif')
 n = len(filenames)
 dt = 10
 
-T = list(range(100, n-dt, 10))
+T = list(range(1, n-dt, 10))
 H = np.zeros(len(T))
 count = 0
 for t in T:
@@ -160,13 +160,13 @@ plt.axhline((1024-F), color = 'w', linewidth = 1)
 plt.axis('off')
 plt.show()
 #%% Saving data
-directory = 'Experiments/2021-11-17'
-exp_n = '1'
+directory = 'Experiments/2021-11-15'
+exp_n = '3'
 
-for f in range(100, 2800, 10):
+for f in range(1, 2800, 20):
     name = directory+'/exp'+exp_n+'/exp'+exp_n+str(f).zfill(6)+'.tif'
     I_t = plt.imread(name)
-    plt.imshow(I_t, vmin = 0, vmax = 300)
+    plt.imshow(I_t, vmin = 0, vmax = 200)
     plt.axis('off')
     plt.show()
 
